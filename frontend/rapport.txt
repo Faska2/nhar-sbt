@@ -1,0 +1,59 @@
+FRONTEND REPORT (React + TailwindCSS)
+
+1) Structure
+frontend/
+  src/
+    components/
+    context/
+    hooks/
+    layouts/
+    pages/
+      admin/
+    services/
+    utils/
+    App.tsx
+    main.tsx
+
+2) Page system
+Routes are defined in src/App.tsx using react-router.
+
+Shop
+  /                 Home (product listing)
+  /product/:id      Product details
+  /cart             Cart
+  /checkout         Checkout (requires login)
+  /orders           My orders (requires login)
+
+Auth
+  /login            Login
+  /register         Register
+
+Admin
+  /admin/products   Manage products
+  /admin/categories Manage categories
+  /admin/orders     Manage orders
+
+3) State management approach
+Auth state uses a simple React context (src/context/AuthContext.tsx):
+  - token stored in localStorage
+  - user loaded from /api/auth/me on refresh
+  - login/register update user + token
+ProtectedRoute and AdminRoute guard routes based on token and role.
+
+Cart/orders are server-driven:
+  - The backend stores cart items per user
+  - The frontend fetches and updates cart using API calls
+
+4) API integration method
+All API calls are in src/services.
+src/services/api.ts is the small fetch wrapper:
+  - base URL from VITE_API_URL or defaults to http://localhost:4000/api
+  - automatically attaches Authorization header when token is provided
+  - throws friendly errors using backend message
+
+5) How to add a new page
+1) Create a new page component under src/pages
+2) Add its route in src/App.tsx
+3) If it needs data, add a function to src/services
+4) Reuse existing components/layouts for consistent UI
+

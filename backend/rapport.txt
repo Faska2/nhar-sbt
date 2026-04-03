@@ -1,0 +1,124 @@
+BACKEND REPORT (Express + TypeScript + Prisma + JWT)
+
+1) Project structure
+backend/
+  prisma/
+    schema.prisma
+    seed.ts
+  src/
+    config/
+    controllers/
+    db/
+    middlewares/
+    routes/
+    services/
+    types/
+    utils/
+    app.ts
+    server.ts
+  package.json
+  tsconfig.json
+
+2) Role of each folder
+src/config
+  Loads and validates environment variables.
+
+src/controllers
+  HTTP layer. Reads request, calls services, sends response.
+
+src/services
+  Business logic. This is where rules live (stock checks, status updates, etc.).
+
+src/routes
+  Express routers that map endpoints to controllers and apply middleware.
+
+src/middlewares
+  Cross-cutting concerns: JWT auth, role checks, validation, global error handling.
+
+src/utils
+  Small helpers like JWT signing/verifying, password hashing, slug formatting.
+
+src/db
+  Prisma client instance.
+
+src/types
+  Type augmentation for Express request.user.
+
+prisma/schema.prisma
+  Database models and relations.
+
+prisma/seed.ts
+  Seed script that creates admin + client users, categories, and products.
+
+3) Authentication flow (JWT)
+Registration
+  POST /api/auth/register
+  - Validate email/password
+  - Hash password
+  - Create user with role CLIENT
+  - Return { user, token }
+
+Login
+  POST /api/auth/login
+  - Validate credentials
+  - Compare password with passwordHash
+  - Sign JWT with { userId, role }
+  - Return { user, token }
+
+Using the token
+  - Frontend sends Authorization: Bearer <token>
+  - requireAuth middleware verifies token and sets req.user
+
+Role system
+  - requireRole('ADMIN') blocks admin-only routes
+
+4) Order workflow
+1. Shopper adds products to cart
+   POST /api/cart/items
+2. Shopper checks out
+   POST /api/orders with shipping fields
+3. Backend creates an Order from cart
+   - Validates cart not empty
+   - Validates stock is sufficient
+   - Creates order + order items in a transaction
+   - Decrements product stock
+   - Clears cart items
+4. Shopper views orders
+   GET /api/orders
+5. Admin manages orders
+   GET /api/orders/admin/all
+   PATCH /api/orders/admin/:id/status
+
+5) Database relationships
+User 1:1 Cart
+Cart 1:N CartItem
+CartItem N:1 Product
+
+Category 1:N Product
+Product 1:N ProductImage
+
+User 1:N Order
+Order 1:N OrderItem
+OrderItem N:1 Product
+
+Snapshots
+  OrderItem stores nameSnapshot and imageUrl so the order stays readable
+  even if product name/images change later.
+
+6) How to extend the project
+Add a new feature endpoint
+  1) Add a service function in src/services
+  2) Add a controller handler in src/controllers
+  3) Add a route in src/routes and apply middlewares
+
+Add a new model
+  1) Update prisma/schema.prisma
+  2) Run prisma migrate
+  3) Update services to read/write the model
+
+Add input validation
+  - Add/adjust zod schemas in route files and keep controllers clean
+
+Add admin features
+  - Create a new route under /api with requireAuth + requireRole('ADMIN')
+
