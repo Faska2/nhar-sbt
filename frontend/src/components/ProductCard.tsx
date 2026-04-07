@@ -11,7 +11,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {imageUrl ? (
           <img src={imageUrl} alt={product.name} className="h-40 w-full object-cover" />
         ) : (
-          <div className="h-40 w-full" />
+          <img src="/IPHONE4.jpeg" alt={product.name} className="h-40 w-full object-cover opacity-50" />
         )}
       </div>
       <div className="mb-1 line-clamp-1 text-sm font-medium text-zinc-100">{product.name}</div>

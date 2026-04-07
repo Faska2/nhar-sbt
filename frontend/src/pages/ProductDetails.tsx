@@ -78,7 +78,7 @@ export default function ProductDetails() {
           {imageUrl ? (
             <img src={imageUrl} alt={product.name} className="h-[420px] w-full object-cover" />
           ) : (
-            <div className="h-[420px] w-full" />
+            <img src="/IPHONE4.jpeg" alt={product.name} className="h-[420px] w-full object-cover opacity-50" />
           )}
         </div>
 

@@ -94,7 +94,13 @@ export default function CartPage() {
                           alt={ci.product.name}
                           className="h-full w-full object-cover"
                         />
-                      ) : null}
+                      ) : (
+                        <img
+                          src="/IPHONE4.jpeg"
+                          alt={ci.product.name}
+                          className="h-full w-full object-cover opacity-50"
+                        />
+                      )}
                     </div>
                     <div>
                       <div className="text-sm font-medium text-zinc-100">{ci.product.name}</div>
